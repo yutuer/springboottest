@@ -1,4 +1,4 @@
-package com.yutuer.springBootDemo;
+package com.yutuer.springBootDemo.repository;
 
 import java.util.List;
 

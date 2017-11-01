@@ -3,6 +3,7 @@ package com.yutuer.springBootDemo;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,17 +11,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.yutuer.springBootDemo.bean.Book;
+import com.yutuer.springBootDemo.repository.ReadingListRepository;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/readingList")
 public class ReadingListController {
 
+	@Autowired
 	private ReadingListRepository readingListRepository;
 
-	@Autowired
-	public ReadingListController(ReadingListRepository readingListRepository) {
-		this.readingListRepository = readingListRepository;
-	}
+	@Value("${amazon.associateId}")
+	private String associateId;
 
 	@RequestMapping(value = "/{reader}", method = RequestMethod.GET)
 	public String readersBooks(@PathVariable("reader") String reader, Model model) {
@@ -28,6 +29,8 @@ public class ReadingListController {
 		List<Book> readingList = readingListRepository.findByReader(reader);
 		if (readingList != null) {
 			model.addAttribute("books", readingList);
+			model.addAttribute("reader", reader);
+			model.addAttribute("amazonID", associateId);
 		}
 		return "readingList";
 	}
@@ -36,6 +39,6 @@ public class ReadingListController {
 	public String addToReadingList(@PathVariable("reader") String reader, Book book) {
 		book.setReader(reader);
 		readingListRepository.save(book);
-		return "redirect:/{reader}";
+		return "redirect:/readingList/{reader}";
 	}
 }
